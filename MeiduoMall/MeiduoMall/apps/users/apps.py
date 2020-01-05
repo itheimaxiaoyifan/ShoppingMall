@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class UsersConfig(AppConfig):
-    name = 'MeiduoMall.apps.users'
+    name = 'users'
 
 
 

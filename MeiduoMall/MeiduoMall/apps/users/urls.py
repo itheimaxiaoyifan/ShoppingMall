@@ -20,6 +20,7 @@ from users import views
 urlpatterns = [
     url(r'^tsview/$', views.tsview),
     url(r'^index/$', views.index),
+    url(r'^test2/$', views.TestView2.as_view()),
 ]
 
 
