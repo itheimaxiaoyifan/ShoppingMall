@@ -51,7 +51,7 @@ var vm = new Vue({
         logout: function () {
             sessionStorage.clear();
             localStorage.clear();
-            location.href = '/login.html';
+            location.href = '/login.imgs';
         },
 
         clear_all_errors: function () {

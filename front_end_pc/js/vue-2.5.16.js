@@ -5208,7 +5208,7 @@ var namespaceMap = {
 };
 
 var isHTMLTag = makeMap(
-  'html,body,base,head,link,meta,style,title,' +
+  'imgs,body,base,head,link,meta,style,title,' +
   'address,article,aside,footer,header,h1,h2,h3,h4,h5,h6,hgroup,nav,section,' +
   'div,dd,dl,dt,figcaption,figure,picture,hr,img,li,main,ol,p,pre,ul,' +
   'a,b,abbr,bdi,bdo,br,cite,code,data,dfn,em,i,kbd,mark,q,rp,rt,rtc,ruby,' +
@@ -5496,7 +5496,7 @@ function createPatchFunction (backend) {
 
   function removeNode (el) {
     var parent = nodeOps.parentNode(el);
-    // element may have already been removed due to v-html / v-text
+    // element may have already been removed due to v-imgs / v-text
     if (isDef(parent)) {
       nodeOps.removeChild(parent, el);
     }
@@ -5989,7 +5989,7 @@ function createPatchFunction (backend) {
         if (!elm.hasChildNodes()) {
           createChildren(vnode, children, insertedVnodeQueue);
         } else {
-          // v-html and domProps: innerHTML
+          // v-imgs and domProps: innerHTML
           if (isDef(i = data) && isDef(i = i.domProps) && isDef(i = i.innerHTML)) {
             if (i !== elm.innerHTML) {
               /* istanbul ignore if */
@@ -8723,7 +8723,7 @@ var canBeLeftOpenTag = makeMap(
 var isNonPhrasingTag = makeMap(
   'address,article,aside,base,blockquote,body,caption,col,colgroup,dd,' +
   'details,dialog,div,dl,dt,fieldset,figcaption,figure,footer,form,' +
-  'h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,html,legend,li,menuitem,meta,' +
+  'h1,h2,h3,h4,h5,h6,head,header,hgroup,hr,imgs,legend,li,menuitem,meta,' +
   'optgroup,option,param,rp,rt,source,style,summary,tbody,td,tfoot,th,thead,' +
   'title,tr,track'
 );
@@ -10867,7 +10867,7 @@ Vue.prototype.$mount = function (
   /* istanbul ignore if */
   if (el === document.body || el === document.documentElement) {
     "development" !== 'production' && warn(
-      "Do not mount Vue to <html> or <body> - mount to normal elements instead."
+      "Do not mount Vue to <imgs> or <body> - mount to normal elements instead."
     );
     return this
   }

@@ -3,6 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <title>测试</title>
+    <script type="text/javascript" src="js/axios-0.18.0.min.js"></script>
+    <script type="text/javascript">
+        {#axios.get('http://127.0.0.1:8000/test2')#}
+        {#    .then(function (response) {#}
+        {#        alert(response.data.mes)#}
+        {#    })#}
+        {#    .catch(function (error) {#}
+        {#        alert(error)#}
+        {#    })#}
+
+        axios.post('http://127.0.0.1:8000/test2/')
+            .then(response => {
+                alert(response.data.mes)
+            })
+            .catch(error => {
+                alert(error)
+            })
+    </script>
 </head>
 <body>
 <h3>测试</h3>

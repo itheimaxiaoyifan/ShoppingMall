@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 # 开发使用的配置文件
 import os
 import sys
+# 超级用户admin admin123456
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
@@ -25,8 +26,7 @@ SECRET_KEY = '+34^gopz4fy(@d4d)nwo0c0x$5vpllmru(mb6j-j5fuw*pq+0o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ['api.meiduo.site', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -40,7 +40,10 @@ INSTALLED_APPS = [
     # 'users.apps.UsersConfig',
     'rest_framework',
     'users',
+    'corsheaders',
 ]
+# 添加自定义的用户模型类
+AUTH_USER_MODEL = 'users.User'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,7 +53,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
+#  设置跨域白名单
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8020',
+    'http://localhost:8020',
+    'http://api.meiduo.site:8000',
+    'http://www.meiduo.site:8080',
+    # 'api.meiduo.site:8000',
+)
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'MeiduoMall.urls'
 
@@ -73,7 +86,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'MeiduoMall.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
@@ -87,7 +99,6 @@ DATABASES = {
         'NAME': 'meiduo_mall'
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -107,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
@@ -120,7 +130,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -141,7 +150,15 @@ CACHES = {
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
-    }
+    },
+    # 保存短信验证码
+    "sms_codes": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
 }
 
 # 保存 session数据到 Redis中，主要给django的admin后台使用
@@ -151,7 +168,7 @@ SESSION_CACHE_ALIAS = "session"
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,  # 是否禁用已经存在的日志器
-    'formatters': {  					# 日志信息显示的格式
+    'formatters': {  # 日志信息显示的格式
         'verbose': {
             'format': '%(levelname)s %(asctime)s %(module)s %(lineno)d %(message)s'
         },
@@ -160,31 +177,31 @@ LOGGING = {
         },
     },
     'filters': {
-        'require_debug_true': {  	# django在debug模式下才输出日志
+        'require_debug_true': {  # django在debug模式下才输出日志
             '()': 'django.utils.log.RequireDebugTrue',
         },
     },
-    'handlers': {  		# 日志处理方法
-        'console': {  	# 向终端中输出日志
+    'handlers': {  # 日志处理方法
+        'console': {  # 向终端中输出日志
             'level': 'INFO',
             'filters': ['require_debug_true'],
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': { 		 # 向文件中输出日志
+        'file': {  # 向文件中输出日志
             'level': 'INFO',
             'class': 'logging.handlers.RotatingFileHandler',
             # 日志文件的位置
             'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/meiduo.log"),
-            'maxBytes': 300 * 1024 * 1024,   # 日志文件的最大容量
-            'backupCount': 10,   # 300M * 10
+            'maxBytes': 300 * 1024 * 1024,  # 日志文件的最大容量
+            'backupCount': 10,  # 300M * 10
             'formatter': 'verbose'
         },
     },
     'loggers': {
-        'django': {  	# 定义了一个名为django的日志器
-            'handlers': ['console', 'file'],  	# 可以同时向终端与文件中输出日志
-            'level': 'INFO',  					# 日志器接收的最低日志级别
+        'django': {  # 定义了一个名为django的日志器
+            'handlers': ['console', 'file'],  # 可以同时向终端与文件中输出日志
+            'level': 'INFO',  # 日志器接收的最低日志级别
         },
     }
 }
@@ -192,3 +209,5 @@ LOGGING = {
 REST_FRAMEWORK = {
     # 'EXCEPTION_HANDLER': 'MeiduoMall.utils.exceptions.custom_exception_handler',
 }
+
+STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]

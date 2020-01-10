@@ -21,6 +21,8 @@ urlpatterns = [
     url(r'^tsview/$', views.tsview),
     url(r'^index/$', views.index),
     url(r'^test2/$', views.TestView2.as_view()),
+    url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
+    url(r'^users/$', views.CreateUserView.as_view()),
 ]
 
 
