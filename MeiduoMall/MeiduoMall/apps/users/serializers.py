@@ -5,6 +5,7 @@ from redis import StrictRedis
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework import serializers
+from rest_framework_jwt.settings import api_settings
 
 from users.models import User
 
@@ -13,6 +14,7 @@ class CreateUserSerializer(ModelSerializer):
     password2 = serializers.CharField(label='确认密码', min_length=8, max_length=20, write_only=True)
     sms_code = serializers.CharField(label='短信验证码', max_length=6, write_only=True)
     allow = serializers.BooleanField(label='同意协议', default=False, write_only=True)
+    token = serializers.CharField(label='登录状态token', read_only=True)
 
     def create(self, validated_data):
         user = User.objects.create_user(
@@ -20,6 +22,13 @@ class CreateUserSerializer(ModelSerializer):
             password=validated_data.get('password'),
             mobile=validated_data.get('mobile')
         )
+        # 注册成功自动登录，需要生成jwt并返回给客户端
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        # {'user_id': 12, 'email': '', 'username': '13600000000', 'exp': 1539048426}
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        user.token = token  # 生成的jwt 序列化返回
         return user
 
     def validate_mobile(self, value):
@@ -38,8 +47,6 @@ class CreateUserSerializer(ModelSerializer):
         redis_connection = get_redis_connection('sms_codes')  # type: StrictRedis
         mobile = attrs['mobile']
         real_sms_codes = redis_connection.get('sms_%s' % mobile)
-        print('real_sms_codes:', real_sms_codes)
-        print("sms_code:", attrs['sms_code'])
         if real_sms_codes is None:
             raise serializers.ValidationError('无效的短信验证码')
         if real_sms_codes.decode() != attrs['sms_code']:
@@ -67,4 +74,4 @@ class CreateUserSerializer(ModelSerializer):
             }
         }
         fields = ('id', 'username', 'password', 'mobile',
-                  'password2', 'sms_code', 'allow')
+                  'password2', 'sms_code', 'allow', 'token')

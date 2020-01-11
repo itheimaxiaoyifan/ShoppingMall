@@ -10,8 +10,10 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 # 开发使用的配置文件
+import datetime
 import os
 import sys
+
 # 超级用户admin admin123456
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'users',
     'corsheaders',
+    'oauth',
 ]
 # 添加自定义的用户模型类
 AUTH_USER_MODEL = 'users.User'
@@ -57,11 +60,11 @@ MIDDLEWARE = [
 ]
 #  设置跨域白名单
 CORS_ORIGIN_WHITELIST = (
-    'http://127.0.0.1:8020',
-    'http://localhost:8020',
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
     'http://api.meiduo.site:8000',
     'http://www.meiduo.site:8080',
-    # 'api.meiduo.site:8000',
+    # 'api.meiduo.site:8000',REST_FRAMEWORK
 )
 CORS_ALLOW_CREDENTIALS = True
 
@@ -208,6 +211,20 @@ LOGGING = {
 # DRF自定义异常处理配置
 REST_FRAMEWORK = {
     # 'EXCEPTION_HANDLER': 'MeiduoMall.utils.exceptions.custom_exception_handler',
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # jwt认证
+        'rest_framework.authentication.SessionAuthentication',  # 管理后台使用
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
 
+JWT_AUTH= {    # 导包： import datetime
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  	# jwt有效时间
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'users.utils.jwt_response_payload_handler',
+}
+AUTHENTICATION_BACKENDS = ['users.utils.UsernameMobileAuthBackend']
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static_files')]
+
+QQ_CLIENT_ID = '101474184'									# APP ID
+QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'		# APP Key
+QQ_REDIRECT_URI = 'http://www.meiduo.site:8080/oauth_callback.html' # 登录成功的回调地址

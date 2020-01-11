@@ -28,7 +28,7 @@ class SMScodeView(APIView):
         sms_code = '%06d' % random.randint(0, 999999)
         logger.info('sms_code: %s' % sms_code)
         #  2.使用云通信发送短信
-        # CCP().send_template_sms(mobile, [sms_code, 5], 1)
+        # CCP().send_template_sms.delay(mobile, [sms_code, 5], 1)
         # 使用celery来发送短信
         send_sms.delay('13600001111', '213123')
         #  3.保存短信到redis expiry

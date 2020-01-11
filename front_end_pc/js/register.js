@@ -153,6 +153,13 @@ var vm = new Vue({
                     };
                     axios.post(this.host + '/users/', data)
                         .then(response=>{
+                            //清除之前保存的数据
+                            sessionStorage.clear();
+                            localStorage.clear();
+                            // 保存用户的登录状态
+                            localStorage.token = response.data.token;
+                            localStorage.username = response.data.username;
+                            localStorage.user_id = response.data.id;
                             location.href='/index.html';
                         })
                         .catch(error=>{
@@ -164,6 +171,7 @@ var vm = new Vue({
                             }else {alert('注册失败')}
                         })
             }
+
         }
     }
 });

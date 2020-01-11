@@ -14,17 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import url
-from rest_framework_jwt.views import obtain_jwt_token
 
-from users import views
+
+from oauth import views
 
 urlpatterns = [
-    url(r'^tsview/$', views.tsview),
-    url(r'^index/$', views.index),
-    url(r'^test2/$', views.TestView2.as_view()),
-    url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
-    url(r'^users/$', views.CreateUserView.as_view()),
-    url(r'^login/$', obtain_jwt_token),
+    # url(r'^tsview/$', views.tsview),
+    url(r'^/qq/authorization/$', views.QQURLView.as_view()),
+    url(r'^/qq/user/$', views.QQUserView.as_view()),
+
 ]
 
 
