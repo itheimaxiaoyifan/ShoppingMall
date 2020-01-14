@@ -35,7 +35,7 @@ var vm = new Vue({
                 }else{ //用户未绑定
                     this.openid = response.data.openid;
                     this.is_show_waiting = false; //显示绑定页面
-                    alert(this.openid)
+                    alert('openid:' + this.openid)
                 }
             })
             .catch(error=>{
@@ -140,6 +140,31 @@ var vm = new Vue({
             this.check_pwd();
             this.check_phone();
             this.check_sms_code();
+            if(this.error_password===false&&this.error_sms_code===false&&this.error_phone===false){
+                axios.post(this.host + '/oauth/qq/user/',{
+                    password: this.password,
+                    mobile: this.mobile,
+                    sms_code: this.sms_code,
+                    openid: this.openid
+                } )
+                    .then(response=>{
+                        sessionStorage.clear();
+                        localStorage.clear();
+                        localStorage.token = response.data.token;
+                        localStorage.user_id = response.data.user_id;
+                        localStorage.username = response.data.username;
+                        // QQ登录成功，跳转到指定页面
+                        location.href = this.get_query_string('state')
+                    })
+                    .catch(error=>{
+                        if(error.response.status === 400){
+                            this.error_sms_code_message = error.response.data.message[0];
+                            this.error_sms_code = true
+                        }else {
+                            console.log(error.response.data)
+                        }
+                    })
+            }
 
         }
     }

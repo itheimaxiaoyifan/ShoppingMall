@@ -7,6 +7,8 @@ from rest_framework.views import APIView
 from rest_framework_jwt.settings import api_settings
 
 from oauth.models import OauthQQUser
+from oauth.serializers import QQUserSerializer
+from oauth.utils import sign_openid
 
 
 class QQURLView(APIView):
@@ -47,6 +49,8 @@ class QQUserView(APIView):
         try:
             qquser = OauthQQUser.objects.get(openid=openid)
         except OauthQQUser.DoesNotExist:
+            # 使用itsdangerous模块对openid加密
+            openid = sign_openid(openid)
             return Response({'openid': openid})
         else:
             jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
@@ -63,3 +67,20 @@ class QQUserView(APIView):
                 'username': user.username
             })
             return response
+
+    # 　绑定美多用户
+    def post(self, request):
+        serializer = QQUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        #  生成JWT并相应
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        data = {
+            'token': token,
+            'username': user.username,
+            'user_id': user.id
+        }
+        return Response(data)

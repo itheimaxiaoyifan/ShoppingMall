@@ -25,6 +25,7 @@ urlpatterns = [
     url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
     url(r'^users/$', views.CreateUserView.as_view()),
     url(r'^login/$', obtain_jwt_token),
+    url(r'^user/$', views.UserDetailView.as_view()),
 ]
 
 

@@ -2,12 +2,13 @@ from django.http import HttpResponse
 from django.shortcuts import render
 
 # Create your views here.
-from rest_framework.generics import CreateAPIView
+from rest_framework.generics import RetrieveAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from users.models import User
-from users.serializers import CreateUserSerializer
+from users.serializers import CreateUserSerializer, UserDetailSerializer
 
 
 def tsview(request):
@@ -39,3 +40,11 @@ class UsernameCountView(APIView):
 
 class CreateUserView(CreateAPIView):
     serializer_class = CreateUserSerializer
+
+
+class UserDetailView(RetrieveAPIView):
+    serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
